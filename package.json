@@ -1,0 +1,17 @@
+{
+  "name": "joopyter",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^8.1.4"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.55.1",
+    "typescript": "^7.0.2"
+  }
+}
