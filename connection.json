@@ -1,0 +1,11 @@
+{
+  "transport": "ipc",
+  "ip": "/tmp/joopyter-kernel",
+  "shell_port": 1,
+  "iopub_port": 2,
+  "stdin_port": 3,
+  "control_port": 4,
+  "hb_port": 5,
+  "key": "",
+  "signature_scheme": "hmac-sha256"
+}

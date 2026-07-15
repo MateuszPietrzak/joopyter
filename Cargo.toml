@@ -1,0 +1,9 @@
+[package]
+name = "joopyter"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = "1.0.228"
+tokio = "1.52.3"
+zeromq = "0.6.0"
