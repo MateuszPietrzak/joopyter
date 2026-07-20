@@ -1,18 +1,21 @@
 {
   "name": "joopyter",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "vite": "^8.1.4"
-  },
-  "dependencies": {
-    "monaco-editor": "^0.55.1",
-    "typescript": "^7.0.2"
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.13.2",
+    "svelte": "^5.56.4",
+    "svelte-check": "^4.7.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1"
   }
 }
