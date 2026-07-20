@@ -10,7 +10,7 @@ Prerequisites:
 
 ### Full hot-reloading
 
-For both frontend and backend hot-reloading you need to host the frontend separately from the backend. The frontend will proxy API requests to the server, and use trunk's hot-reloading capabilities. It will be hosted on the port `8000`.
+For both frontend and backend hot-reloading you need to host the frontend separately from the backend. The frontend will proxy API requests to the server on port `8080`, and use trunk's hot-reloading capabilities. It will be hosted on the port `8000`, where you should be accessing the frontend during development. Port `8080` will work, but not provide you with the hot-reloading.
 
 #### Frontend
 
@@ -45,4 +45,4 @@ cd backend
 cargo build
 ```
 
-The resulting binary can be used standalone, contiaining the entire backend and frontend.
+The resulting binary can be used standalone, containing the entire backend and frontend. The server uses port `8080`.
