@@ -1,7 +1,11 @@
 use gloo_net::http::Request;
+use gloo_net::websocket::Message;
+use gloo_net::websocket::futures::WebSocket;
 use serde::Deserialize;
+use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew::suspense::use_future;
+use futures::StreamExt;
 
 #[derive(Properties, PartialEq)]
 struct VideosFetchProps {
@@ -39,6 +43,49 @@ fn VideosFetcher(
         Err(err) => Ok(html! {
             <p>{format!("Error fetching videos: {err}")}</p>
         }),
+    }
+}
+
+#[derive(Clone, PartialEq, Deserialize)]
+struct StdOutData {
+    timestamp: u64,
+    data: AttrValue,
+}
+
+#[component]
+fn StdOutTerminal() -> Html {
+    let messages = use_state(Vec::<StdOutData>::new);
+    {
+        let messages = messages.clone();
+        use_effect_with((), move |_| {
+            let mut ws = WebSocket::open("/api/stream").expect("Failed to connect");
+
+            spawn_local(async move {
+                while let Some(msg) = ws.next().await {
+                    if let Ok(Message::Text(text)) = msg {
+                        if let Ok(item) = serde_json::from_str::<StdOutData>(&text) {
+                            messages.set({
+                                let mut current = (*messages).clone();
+                                current.push(item);
+                                current
+                            });
+                        }
+                    }
+                }
+            });
+
+            || ()
+        });
+    }
+    html! {
+        <>
+            <h1>{"Std Out Stream"}</h1>
+            <ul>
+            for message in &*messages {
+                <li>{format!("{}: {}", message.timestamp, message.data)}</li>
+            }
+            </ul>
+        </> 
     }
 }
 
@@ -96,16 +143,17 @@ fn App() -> Html {
     };
 
     html! {
-            <>
-                <h1>{ "RustConf Explorer" }</h1>
-                <Suspense fallback={html! {<p>{"Loading..."} </p>}} >
-                    <VideosFetcher
-                        on_click={on_video_select}
-                       selected_video={(*selected_video).clone()}
-                   />
-                </Suspense>
-            </>
-        }
+        <>
+            <h1>{ "RustConf Explorer" }</h1>
+            <Suspense fallback={html! {<p>{"Loading..."} </p>}} >
+                <VideosFetcher
+                    on_click={on_video_select}
+                   selected_video={(*selected_video).clone()}
+               />
+            </Suspense>
+            <StdOutTerminal/>
+        </>
+    }
 }
 
 fn main() {
