@@ -2,6 +2,8 @@ use futures::StreamExt;
 use gloo_net::http::Request;
 use gloo_net::websocket::Message;
 use gloo_net::websocket::futures::WebSocket;
+use monaco::api::TextModel;
+use monaco::yew::CodeEditor;
 use serde::Deserialize;
 use std::rc::Rc;
 use wasm_bindgen_futures::spawn_local;
@@ -153,6 +155,30 @@ fn VideoDetails(VideosDetailsProps { video }: &VideosDetailsProps) -> Html {
     }
 }
 
+#[derive(Properties, PartialEq)]
+struct CodeCellProps {
+    text_model: TextModel,
+}
+
+#[component]
+fn CodeCell(CodeCellProps { text_model }: &CodeCellProps) -> Html {
+    let contents = use_state_eq(String::new);
+    let onclick = {
+        let contents = contents.clone();
+        let model = text_model.clone();
+        Callback::from(move |_| {
+            contents.set(model.get_value());
+        })
+    };
+    html! {
+        <>
+            <CodeEditor classes={"code-cell"} model={text_model.clone()}/>
+            <button {onclick}>{"Output"}</button>
+            <p>{(*contents).clone()}</p>
+        </>
+    }
+}
+
 #[component]
 fn App() -> Html {
     let selected_video = use_state(|| None);
@@ -161,6 +187,10 @@ fn App() -> Html {
         let selected_video = selected_video.clone();
         Callback::from(move |video: Video| selected_video.set(Some(video)))
     };
+
+    let text_model = use_state_eq(|| {
+        TextModel::create("print('Hello, World!')\n1 + 1", Some("python"), None).unwrap()
+    });
 
     html! {
         <>
@@ -171,6 +201,7 @@ fn App() -> Html {
                    selected_video={(*selected_video).clone()}
                />
             </Suspense>
+            <CodeCell text_model={(*text_model).clone()}/>
             <StdOutTerminal/>
         </>
     }

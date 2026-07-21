@@ -640,6 +640,7 @@ dependencies = [
  "futures",
  "futures-util",
  "gloo-net 0.7.0",
+ "monaco",
  "serde",
  "serde_json",
  "wasm-bindgen-futures",
@@ -1369,6 +1370,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "monaco"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "908859a2702e5575c12d0b0e373b554144fd0b4b4e29f6726d28837076b238ca"
+dependencies = [
+ "js-sys",
+ "paste",
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
+]
+
+[[package]]
 name = "new_mime_guess"
 version = "4.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1437,6 +1451,12 @@ dependencies = [
  "smallvec",
  "windows-link",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "percent-encoding"
