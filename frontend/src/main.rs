@@ -1,11 +1,12 @@
+use futures::StreamExt;
 use gloo_net::http::Request;
 use gloo_net::websocket::Message;
 use gloo_net::websocket::futures::WebSocket;
 use serde::Deserialize;
+use std::rc::Rc;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew::suspense::use_future;
-use futures::StreamExt;
 
 #[derive(Properties, PartialEq)]
 struct VideosFetchProps {
@@ -52,9 +53,32 @@ struct StdOutData {
     data: AttrValue,
 }
 
+#[derive(Clone, Default, PartialEq)]
+struct StdOutState {
+    messages: Vec<StdOutData>,
+}
+
+enum StdOutAction {
+    Append(StdOutData),
+}
+
+impl Reducible for StdOutState {
+    type Action = StdOutAction;
+
+    fn reduce(mut self: Rc<Self>, action: Self::Action) -> Rc<Self> {
+        match action {
+            StdOutAction::Append(data) => {
+                let state = Rc::make_mut(&mut self);
+                state.messages.push(data);
+            }
+        };
+        self
+    }
+}
+
 #[component]
 fn StdOutTerminal() -> Html {
-    let messages = use_state(Vec::<StdOutData>::new);
+    let messages = use_reducer(StdOutState::default);
     {
         let messages = messages.clone();
         use_effect_with((), move |_| {
@@ -64,11 +88,7 @@ fn StdOutTerminal() -> Html {
                 while let Some(msg) = ws.next().await {
                     if let Ok(Message::Text(text)) = msg {
                         if let Ok(item) = serde_json::from_str::<StdOutData>(&text) {
-                            messages.set({
-                                let mut current = (*messages).clone();
-                                current.push(item);
-                                current
-                            });
+                            messages.dispatch(StdOutAction::Append(item));
                         }
                     }
                 }
@@ -81,11 +101,11 @@ fn StdOutTerminal() -> Html {
         <>
             <h1>{"Std Out Stream"}</h1>
             <ul>
-            for message in &*messages {
+            for message in &messages.messages {
                 <li>{format!("{}: {}", message.timestamp, message.data)}</li>
             }
             </ul>
-        </> 
+        </>
     }
 }
 
